@@ -96,7 +96,6 @@ class UserDetailsModelAPITests(TestCase):
     def test_relation_user_dne(self):
         response = c.get('/author/friends/%s' %'bogus_user')
         self.assertEquals(response.status_code, 400)
-        # self.assertEquals(response.content['error'], 'Username not found')
 
     def test_retrieve_friends(self):
         FriendRelationship.objects.create(friendor = self.user_a, friend = self.user)

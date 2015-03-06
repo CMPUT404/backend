@@ -8,6 +8,12 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('user', 'id', 'text', 'date', 'image')
 
+class IncomingPostSerializer(serializers.ModelSerializer):
+    """Constrain an incoming post to only these fields"""
+    class Meta:
+        model = Post
+        fields = ('text', 'image')
+
 class PostsSerializer(serializers.ModelSerializer):
     """
     Multiple posts are deserialized as a list object
@@ -23,7 +29,7 @@ class PostsSerializer(serializers.ModelSerializer):
             }
         ]
 
-    Only for retrieval. Should not be used for insertion.
+    Only for retrieval and deletion. Should not be used for insertion.
     """
     user = CompactUserSerializer(many=False, read_only=True)
 

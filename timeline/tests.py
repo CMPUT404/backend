@@ -32,7 +32,6 @@ LAST_NAME = "Maguire"
 EMAIL = "jmaguire@smi.com"
 PASSWORD = str(uuid.uuid4())
 
-
 # Post attributes
 TEXT = "Some post text"
 
@@ -136,4 +135,7 @@ class TimelineAPITestCase(TestCase):
 
         response = c.post('/author/registration/', self.user_dict)
         self.assertEquals(response.status_code, 201, "User and UserDetails not created")
+
+        # partially, complete test, need authorization permissions
         response = c.get('/author/%s/posts' %username)
+        self.assertEquals(response.status_code, 200)

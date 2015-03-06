@@ -1,14 +1,21 @@
 from django.shortcuts import render
 from django.http import Http404
+
 from author.models import User
 from author.models import UserDetails
+
 from timeline.models import Post, Comment
-from timeline.serializers import PostsSerializer, CommentSerializer
+from timeline.serializers import (
+    PostSerializer,
+    IncomingPostSerializer,
+    PostsSerializer,
+    CommentSerializer )
 from timeline.permissions import IsFriend, IsOwner
 
 from rest_framework.views import APIView
 from rest_framework import mixins, generics
 from rest_framework.response import Response
+from rest_framework import authentication, permissions
 
 import json
 
@@ -21,6 +28,30 @@ class MultipleFieldLookupMixin(object):
         for field in self.lookup_fields:
             filter[field] = self.kwargs[field]
         return get_object_or_404(queryset, **filter)
+
+class CreatePost(APIView):
+    """Create posts using an authenticated user's credentials"""
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, format=None):
+        serializer = IncomingPostSerializer
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+# class DeletePost(MultipleFieldLookupMixin, generics.DestroyAPIView):
+#     """Delete posts using an authenticated user's credentials"""
+#
+#     authentication_classes = (authentication.TokenAuthentication,)
+#
+#     # TODO need is owner authentication permission
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     queryset = Post.objects.all()
+#     serializer_class = PostsSerializer
+#     lookup_fields = ('id',)
 
 class GetPosts(APIView):
     permission_classes = (IsOwner, IsFriend,)
